@@ -33,7 +33,7 @@
     });
 
     function formatItem(item) {
-      return item.Name + ': $' + item.Price;
+      return item.name + ': $' + item.price;
     }
 
     function find() {
@@ -43,7 +43,7 @@
             $('#product').text(formatItem(data));
           })
           .fail(function (jqXHR, textStatus, err) {
-            $('#product').text('Error: ' + err);
+              $('#product').text('Error ' + jqXHR.responseJSON.status+': ' + jqXHR.responseJSON.title);
           });
     }
     </script>
