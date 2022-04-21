@@ -46,6 +46,24 @@ namespace EsercitazioneProdotti.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult Post([FromBody] Product obj)
+        {
+            return Ok(obj.Id);
+        }
+
+
+        [HttpPatch("{id}")]
+        public IActionResult Put(string id, [FromBody] Product obj)
+        {
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(string id)
+        {
+            return NoContent();
+        }
 
     }
 }
