@@ -4,7 +4,6 @@
     <title>Product App</title>
 </head>
 <body>
-
     <div>
         <h2>All Products</h2>
         <ul id="products" />
@@ -31,7 +30,7 @@
         </datalist>
         <br />
         <label>Price in $</label>
-        <input type="number" id="prodPrice" placeholder="1.0" step="0.01" min="0" max="10" />
+        <input type="number" id="prodPrice" placeholder="1.0" step="0.5" min="1" max="100" />
         <br />
         <input type="button" value="Add" onclick="add()" />
         <br />
@@ -109,14 +108,14 @@
                 contentType: "application/json", // send as JSON
                 data: JSON.stringify(data),
 
-                complete: function () {
+                complete: function (res) {
                     //called when complete
-                    if (status == 'success') {
+                    if (res.status == 200) {
                         $("#addProductResult").text("Prodotto inserito con successo");
                         loadProducts();
                     }
                     else {
-                        $("addProductResult").text("error :" + status);
+                        $("addProductResult").text("error :" + res.status);
                     }
                 },
 
@@ -125,15 +124,12 @@
                     alert("second success");
                 },
 
-                error: function () {
+                error: function (e) {
                     //called when there is an error
-                    alert("error");
+                    console.log(e);
+                    $("#addProductResult").text("error " + e.status + " : " + e.responseText);
                 },
             });
-
-
-
-
         }
     </script>
 </body>
