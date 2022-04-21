@@ -84,6 +84,8 @@
                 category: category1,
                 price: price1
             };
+
+            /*
             $.post(uri, data, function (result, status) {
                 if (status == 'success') {
                     $("#addProductResult").text("Prodotto inserito con successo");
@@ -98,8 +100,38 @@
             }).fail(function () {
                 alert("error");
             });
+            */
 
-            
+            $.ajax({
+                url: uri,
+                type: "POST",
+                dataType: "xml/html/script/json", // expected format for response
+                contentType: "application/json", // send as JSON
+                data: JSON.stringify(data),
+
+                complete: function () {
+                    //called when complete
+                    if (status == 'success') {
+                        $("#addProductResult").text("Prodotto inserito con successo");
+                        loadProducts();
+                    }
+                    else {
+                        $("addProductResult").text("error :" + status);
+                    }
+                },
+
+                success: function () {
+                    //called when successful
+                    alert("second success");
+                },
+
+                error: function () {
+                    //called when there is an error
+                    alert("error");
+                },
+            });
+
+
 
 
         }
