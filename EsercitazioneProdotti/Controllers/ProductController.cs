@@ -49,7 +49,7 @@ namespace EsercitazioneProdotti.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Product obj)
         {
-            return Ok(obj.Id);
+                return Ok(obj.Id);
         }
 
 

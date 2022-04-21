@@ -15,37 +15,94 @@
         <input type="button" value="Search" onclick="find();" />
         <p id="product" />
     </div>
+    <div>
+        <h2>Add product</h2>
+        <label>Name</label>
+        <input type="text" id="prodName" />
+        <br />
+        <label>Category</label>
+        <input type="text" id="prodCategory" list="cat_list" autocomplete="on" />
+        <datalist id="cat_list">
+            <option>Groceries</option>
+            <option>Toys</option>
+            <option>Hardware</option>
+            <option>Others</option>
+            <!-- etc... -->
+        </datalist>
+        <br />
+        <label>Price in $</label>
+        <input type="number" id="prodPrice" placeholder="1.0" step="0.01" min="0" max="10" />
+        <br />
+        <input type="button" value="Add" onclick="add()" />
+        <br />
+        <p id="addProductResult" />
+    </div>
+
 
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
     <script>
         var uri = 'https://localhost:44355/product';
 
-    $(document).ready(function () {
-      // Send an AJAX request
-      $.getJSON(uri)
-          .done(function (data) {
-            // On success, 'data' contains a list of products.
-            $.each(data, function (key, item) {
-              // Add a list item for the product.
-              $('<li>', { text: formatItem(item) }).appendTo($('#products'));
+        $(document).ready(function () {
+            // Send an AJAX request
+            loadProducts();
+        });
+
+        function loadProducts() {
+            $("#products").text("");
+            $.getJSON(uri)
+                .done(function (data) {
+                    // On success, 'data' contains a list of products.
+                    $.each(data, function (key, item) {
+                        // Add a list item for the product.
+                        $('<li>', { text: formatItem(item) }).appendTo($('#products'));
+                    });
+                });
+        }
+
+        function formatItem(item) {
+            return item.name + ': € ' + item.price;
+        }
+
+        function find() {
+            var id = $('#prodId').val();
+            $.getJSON(uri + '/' + id)
+                .done(function (data) {
+                    $('#product').text(formatItem(data));
+                })
+                .fail(function (jqXHR, textStatus, err) {
+                    $('#product').text('Error: ' + err);
+                });
+        }
+
+        function add() {
+            var name1 = $('#prodName').val();
+            var category1 = $('#prodCategory').val();
+            var price1 = $('#prodPrice').val();
+            var data = {
+                name: name1,
+                category: category1,
+                price: price1
+            };
+            $.post(uri, data, function (result, status) {
+                if (status == 'success') {
+                    $("#addProductResult").text("Prodotto inserito con successo");
+                    loadProducts();
+                }
+                else {
+                    $("addProductResult").text("error :" + status);
+                }
+
+            }, "json").done(function () {
+                alert("second success");
+            }).fail(function () {
+                alert("error");
             });
-          });
-    });
 
-    function formatItem(item) {
-      return item.name + ': $' + item.price;
-    }
+            
 
-    function find() {
-      var id = $('#prodId').val();
-      $.getJSON(uri + '/' + id)
-          .done(function (data) {
-            $('#product').text(formatItem(data));
-          })
-          .fail(function (jqXHR, textStatus, err) {
-              $('#product').text('Error ' + jqXHR.responseJSON.status+': ' + jqXHR.responseJSON.title);
-          });
-    }
+
+        }
     </script>
 </body>
 </html>
