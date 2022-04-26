@@ -4,6 +4,7 @@
     <title>Product App</title>
 </head>
 <body>
+
     <div>
         <h2>All Products</h2>
         <ul id="products" />
@@ -15,7 +16,8 @@
         <p id="product" />
     </div>
     <div>
-        <h2>Add product</h2>
+        <h2>Add/Update product</h2>
+        <input type="hidden" id="id" value="-1" />
         <label>Name</label>
         <input type="text" id="prodName" />
         <br />
@@ -32,7 +34,9 @@
         <label>Price in $</label>
         <input type="number" id="prodPrice" placeholder="1.0" step="0.5" min="1" max="100" />
         <br />
-        <input type="button" value="Add" onclick="add()" />
+        <input type="button" value="Add/Update" onclick="save();" />
+        <input type="button" value="Delete" onclick="deleteProduct();" />
+        <input type="reset" value="Cancel" />
         <br />
         <p id="addProductResult" />
     </div>
@@ -67,12 +71,100 @@
             var id = $('#prodId').val();
             $.getJSON(uri + '/' + id)
                 .done(function (data) {
-                    $('#product').text(formatItem(data));
+                    //$('#product').text(formatItem(data));
+                    $('#product').text("Prodotto trovato");
+                    $("#prodName").val(data.name);
+                    $("#prodPrice").val(data.price);
+                    $("#prodCategory").val(data.category);
+                    $("#id").val(data.id);
                 })
                 .fail(function (jqXHR, textStatus, err) {
                     $('#product').text('Error: ' + err);
                 });
         }
+
+        function save() {
+            var id = $("#id").val();
+            if (id == -1)
+                add();
+            else
+                update(id);
+        }
+
+        function update(id) {
+
+            var name1 = $('#prodName').val();
+            var category1 = $('#prodCategory').val();
+            var price1 = $('#prodPrice').val();
+            var data = {
+                id: id,
+                name: name1,
+                category: category1,
+                price: price1
+            };
+
+            $.ajax({
+                type: 'PATCH',
+                url: uri + "/" + $("#id").val(),
+                data: JSON.stringify(data),
+                processData: false,
+                contentType: 'application/json',
+                complete: function (res) {
+                    //called when complete
+                    if (res.status == 204) {
+                        $("#addProductResult").text("Prodotto aggiornato con successo");
+                        loadProducts();
+                    }
+                    else {
+                        $("addProductResult").text("error :" + res.status);
+                    }
+                },
+
+                success: function () {
+                    //called when successful
+                    alert("second success");
+                },
+
+                error: function (e) {
+                    //called when there is an error
+                    console.log(e);
+                    $("#addProductResult").text("error " + e.status + " : " + e.responseText);
+                },
+            });
+
+        }
+
+        function deleteProduct() {
+            $.ajax({
+                type: 'DELETE',
+                url: uri + "/" + $("#id").val(),
+                //data: JSON.stringify(patch),
+                processData: false,
+                contentType: 'application/json',
+                complete: function (res) {
+                    //called when complete
+                    if (res.status == 204) {
+                        $("#addProductResult").text("Prodotto eliminato");
+                        loadProducts();
+                    }
+                    else {
+                        $("addProductResult").text("error :" + res.status);
+                    }
+                },
+
+                success: function () {
+                    //called when successful
+                    alert("second success");
+                },
+
+                error: function (e) {
+                    //called when there is an error
+                    console.log(e);
+                    $("#addProductResult").text("error " + e.status + " : " + e.responseText);
+                },
+            });
+        }
+
 
         function add() {
             var name1 = $('#prodName').val();
@@ -101,6 +193,7 @@
             });
             */
 
+
             $.ajax({
                 url: uri,
                 type: "POST",
@@ -112,6 +205,7 @@
                     //called when complete
                     if (res.status == 200) {
                         $("#addProductResult").text("Prodotto inserito con successo");
+                        $("#id").val(res.responseText);
                         loadProducts();
                     }
                     else {
@@ -130,6 +224,8 @@
                     $("#addProductResult").text("error " + e.status + " : " + e.responseText);
                 },
             });
+
+
         }
     </script>
 </body>

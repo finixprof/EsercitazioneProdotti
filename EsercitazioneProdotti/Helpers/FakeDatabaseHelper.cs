@@ -28,5 +28,48 @@ namespace EsercitazioneProdotti.Helpers
             var product = products.First(t=>t.Id==id);
             return product;
         }
+
+        public static bool Delete(int id)
+        {
+            if (!products.Any(t => t.Id == id))
+                throw new CustomException(404, $"Non esiste il prodotto con id {id}");
+            var p = products.FirstOrDefault(t => t.Id == id);
+            var list = products.ToList();
+            if (list.Remove(p))
+            {
+                products = list.ToArray();
+                return true;
+            }
+            return false;
+        }
+
+        internal static bool Save(Product product)
+        {
+            if (product.Id>0)
+            {
+                return Update(product);
+            }
+            return Insert(product);
+        }
+
+        private static bool Insert(Product product)
+        {
+            var list = products.ToList();
+            product.Id = list.Max(t => t.Id) + 1;
+            list.Add(product);
+            products = list.ToArray();
+            return true;
+        }
+
+        private static bool Update(Product product)
+        {
+            if (!products.Any(t => t.Id == product.Id))
+                throw new CustomException(404, $"Non esiste il prodotto con id {product.Id}");
+            var p = products.FirstOrDefault(t => t.Id == product.Id);
+            p.Name = product.Name;
+            p.Category = product.Category;
+            p.Price = product.Price;
+            return true;
+        }
     }
 }

@@ -47,22 +47,28 @@ namespace EsercitazioneProdotti.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Product obj)
+        public IActionResult Post([FromBody] Product product)
         {
-                return Ok(obj.Id);
+            if (FakeDatabaseHelper.Save(product))
+                return Ok(product.Id);
+            return BadRequest();
         }
 
 
         [HttpPatch("{id}")]
-        public IActionResult Put(string id, [FromBody] Product obj)
+        public IActionResult Put(string id, [FromBody] Product product)
         {
+            if (FakeDatabaseHelper.Save(product))
             return NoContent();
+            return BadRequest();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public IActionResult Delete(int id)
         {
-            return NoContent();
+            if (FakeDatabaseHelper.Delete(id))
+                return NoContent();
+            return BadRequest();
         }
 
     }
